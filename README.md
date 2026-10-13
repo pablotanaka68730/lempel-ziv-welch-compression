@@ -17,3 +17,10 @@ LZW is a fast, dictionary-based scheme that shines when the input contains repea
 ## Edge cases worth knowing
 
 The dictionary is seeded with all 65536 UTF-16 code units, so any JavaScript string round-trips, including lone surrogate halves (which UTF-8 conversion would silently corrupt into U+FFFD). Supplementary-plane characters such as emoji are carried as their surrogate pair rather than a single code point; they still round-trip exactly. Compression only begins to pay off once repeated substrings appear — a single short ASCII word may expand slightly because of the four-byte per-token overhead and the one-word terminator.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
